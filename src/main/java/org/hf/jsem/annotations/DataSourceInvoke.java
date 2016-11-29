@@ -1,4 +1,4 @@
-package org.hf.jsem.orm;
+package org.hf.jsem.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,10 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by adramer on 2016/10/31.
+ * Created by adramer on 2016/11/17.
  */
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface DataSourceMetodAnnotaion {
-    String value() ;
+public @interface DataSourceInvoke {
+    String dataSourceName() default "";
+
+
 }

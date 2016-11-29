@@ -103,7 +103,7 @@ public abstract class BaseDao<E, PK extends Serializable> extends SqlSessionDaoS
                     e.getCause());
         }
 
-        return result;
+         return result;
     }
 
     @SuppressWarnings("unchecked")

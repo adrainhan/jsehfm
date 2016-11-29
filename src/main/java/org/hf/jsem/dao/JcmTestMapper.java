@@ -4,7 +4,6 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.hf.jsem.entity.JcmTest;
 import org.hf.jsem.entity.JcmTestExample;
-import org.hf.jsem.orm.DataSourceClassAnnotaion;
 
 public interface JcmTestMapper {
     /**

@@ -1,6 +1,7 @@
 package org.hf.jsem.serviceI;
 
 import org.hf.jsem.entity.JcmJobInfo;
+import org.hf.jsem.entity.JcmJobInfoExample;
 
 import java.util.List;
 
@@ -8,13 +9,11 @@ import java.util.List;
  * Created by adramer on 2016/10/25.
  */
 public interface JcmJobInfoServiceI {
-    JcmJobInfo getById(String jobCd);
-
     List<JcmJobInfo> getByWorkType(String workType);
 
-    boolean validateAllFinishedByWorkType(String workType);
+    int getCountByExample(JcmJobInfoExample example);
 
-    int updateByPk(String jobCd);
+    boolean saveOrUpdate(JcmJobInfo jcmJobInfo);
 
 
 }

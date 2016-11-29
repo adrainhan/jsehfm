@@ -2,12 +2,16 @@ package org.hf.jsem.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.trilead.ssh2.Connection;
 import com.trilead.ssh2.Session;
 import org.apache.log4j.Logger;
+import org.hf.jsem.entity.JcmJobInfo;
+import org.hf.jsem.entity.SscfWorkMain;
 
 
 /**
@@ -19,7 +23,8 @@ public class ShellInvokeUtil {
     /**
      * 远程调用
      */
-    public static Map<String, String> dynamicExeShell(String ip, String user, String pwd, String shellStatement, String[] parames) {
+    public static Map<String, String> dynamicExeShell(String ip, String user, String pwd, String shellStatement, String[]
+            parames) {
         Map<String, String> result = new HashMap<String, String>();
         Connection connection = null;
         Session session = null;
@@ -30,7 +35,7 @@ public class ShellInvokeUtil {
             boolean login = connection.authenticateWithPassword(user, pwd);
             if (!login) {
                 logger.error("无法连接到远程服务器：" + ip + ":" + user + ":" + shellStatement);
-                result.put("result", "failed");
+                result.put("result", "FAILED");
                 result.put("info", "无法连接到远程服务器：" + ip + ":" + user + ":" + shellStatement);
                 return result;
             }
@@ -40,7 +45,7 @@ public class ShellInvokeUtil {
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e);
-            result.put("result", "failed");
+            result.put("result", "FAILED");
             result.put("info", "执行shell出错：" + ip + ":" + user + ":" + shellStatement);
         } finally {
             if (session != null) {
@@ -68,18 +73,22 @@ public class ShellInvokeUtil {
             process = Runtime.getRuntime().exec(buffer.toString());
             Integer exeFlag = process.waitFor();
             if (exeFlag != null && exeFlag == 0) {
-                result.put("result", "success");
+                result.put("result", "SUCCESS");
+                in = process.getInputStream();
+                result.put("info", readReturnMsg(in));
+            } else {
+                result.put("result", "FAILED");
                 in = process.getInputStream();
                 result.put("info", readReturnMsg(in));
             }
 
         } catch (IOException e) {
             e.printStackTrace();
-            result.put("result", "failed");
+            result.put("result", "FAILED");
             result.put("info", e.getMessage());
         } catch (InterruptedException e) {
             e.printStackTrace();
-            result.put("result", "failed");
+            result.put("result", "FAILED");
             result.put("info", e.getMessage());
         } finally {
             if (in != null) {
@@ -115,12 +124,15 @@ public class ShellInvokeUtil {
             session.waitForCondition(1, 1000 * 60 * 30);   //设置shell最大执行时间，这里设置为30分钟
             int exitCd = session.getExitStatus();  //此处结果依赖上步骤代码
             if (exitCd == 0) {
-                result.put("result", "success");
+                result.put("result", "SUCCESS");
+                result.put("info", readReturnMsg(session.getStdout()));
+            } else {
+                result.put("result", "FAILED");
                 result.put("info", readReturnMsg(session.getStdout()));
             }
         } catch (IOException e) {
             e.printStackTrace();
-            result.put("result", "failed");
+            result.put("result", "FAILED");
             result.put("info", "执行shell脚本发生异常！" + e.getMessage());
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -144,6 +156,7 @@ public class ShellInvokeUtil {
 
         return buffer.toString();
     }
+
 
 
     public static void main(String args[]) {
